@@ -68,6 +68,26 @@ def generate_cloudinit_cfg(
         cloudinit_file.write(cloudinit_cfg)
         
 
+def generate_network_cfg(
+                        data_file='data.yml',
+                        network_template='network.cfg.j2',
+                        network_output='network.cfg'
+                        ):
+    data = load_data(data_file)
+    network_data = [item.get('network', {}) for item in data.get('spec', [])]
+
+    # Prepare context for the template
+    context = {'network_data': network_data}
+
+    # Render the network configuration file using the template
+    network_cfg = render_template(network_template, context)
+
+    # Write the rendered configuration to the output file
+    with open(network_output, 'w') as network_file:
+        network_file.write(network_cfg)
+
+
+
 if __name__ == '__main__':
     # generate_variable_file()
-    generate_cloudinit_cfg()
+    generate_network_cfg()

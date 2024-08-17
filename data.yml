@@ -7,7 +7,16 @@ user_data:
 spec:
   - vm_name: test-vm
     hostname: test-vm.local
+    network:
+      ip_address: 172.16.0.20/24
+      gateway: 172.16.0.1
   - vm_name: test-vm2
     hostname: test-vm2.local
+    network:
+      ip_address: 172.16.0.21/24
+      gateway: 172.16.0.1
   - vm_name: test-vm3
     hostname: test-vm3.local
+    network:
+      ip_address: 172.16.0.22/24
+      gateway: 172.16.0.1

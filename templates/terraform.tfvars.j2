@@ -1,7 +1,11 @@
 {% set vm_name = [] -%}
+{% set hostname = [] -%}
 {% for item in item_values -%}
-    {% if item.vm_name is defined -%}
+    {% if item.vm_name is defined and item.hostname is defined -%}
         {% set _ = vm_name.append(item.vm_name) -%}
+        {% set _ = hostname.append(item.hostname) -%}
     {% endif -%}
 {% endfor -%}
-vm_name = {{ vm_name | tojson | trim -}}
+
+vm_name = {{ vm_name | tojson | trim }}
+hostname = {{ hostname | tojson | trim }}
