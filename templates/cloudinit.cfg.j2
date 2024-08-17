@@ -1,0 +1,21 @@
+#cloud-config
+hostname: ${hostname}
+users:
+  {% for item in user_data -%}
+  {% if 'root' in item.user -%}
+  - name: {{ item.user }}
+    ssh_authorized_keys:
+      - {{ item.sshkey }}
+  {% else -%}
+  - name: {{ item.user }}
+    ssh_authorized_keys:
+      -  {{ item.sshkey }}
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo 
+  {% endif -%}
+{% endfor %}
+ssh_pwauth: false
+runcmd:
+  - echo "AllowUsers ubuntu" >> /etc/ssh/sshd_config
+  - restart ssh

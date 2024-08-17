@@ -1,3 +1,9 @@
+user_data:
+  - user: ubuntu
+    sshkey: <pubkey>
+  - user: root
+    sshkey: <pubkey>
+
 spec:
   - vm_name: test-vm
     hostname: test-vm.local

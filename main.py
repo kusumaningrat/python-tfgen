@@ -52,7 +52,22 @@ def generate_variable_file(data_file='data.yml',
         tfvars_output_file.write(tfvars)
         main_output_file.write(main_tf)
 
-    print("The config files variables.tf and data.tfvars have been generated successfully!")
+def generate_cloudinit_cfg(
+                           data_file='data.yml',
+                           cloudinit_template='cloudinit.cfg.j2',
+                           cloudinit_output='cloudinit.cfg'):
+    data = load_data(data_file)
+    user_data = data.get('user_data', [])
+    item_values = get_item_keys_and_values(data)
+
+    context = {'user_data': user_data}
+    
+    cloudinit_cfg = render_template(cloudinit_template, context)
+
+    with open(cloudinit_output, 'w') as cloudinit_file:
+        cloudinit_file.write(cloudinit_cfg)
+        
 
 if __name__ == '__main__':
-    generate_variable_file()
+    # generate_variable_file()
+    generate_cloudinit_cfg()
