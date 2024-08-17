@@ -1,0 +1,6 @@
+{% for key in item_keys -%}
+variable "{{ key }}" {
+  description = "Description for {{ key }}"
+  type        = list(string)
+}
+{% endfor %}

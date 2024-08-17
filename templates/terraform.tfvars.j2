@@ -1,0 +1,7 @@
+{% set vm_name = [] -%}
+{% for item in item_values -%}
+    {% if item.vm_name is defined -%}
+        {% set _ = vm_name.append(item.vm_name) -%}
+    {% endif -%}
+{% endfor -%}
+vm_name = {{ vm_name | tojson | trim -}}

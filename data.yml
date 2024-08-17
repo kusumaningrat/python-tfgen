@@ -1,0 +1,7 @@
+spec:
+  - vm_name: test-vm
+    hostname: test-vm.local
+  - vm_name: test-vm2
+    hostname: test-vm2.local
+  - vm_name: test-vm3
+    hostname: test-vm3.local
