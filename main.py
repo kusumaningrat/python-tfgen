@@ -20,8 +20,11 @@ def get_item_keys_and_values(data):
 
     return item_keys, item_values
 
-def render_template(template_name, context, template_dir='templates'):
+def render_template(template_name, context=None, template_dir='templates'):
     """Render a Jinja2 template with the given context."""
+    # context is optional here
+    if context is None:
+        context = {}
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template(template_name)
     return template.render(context)
@@ -52,10 +55,12 @@ def generate_variable_file(data_file='data.yml',
         tfvars_output_file.write(tfvars)
         main_output_file.write(main_tf)
 
-def generate_cloudinit_cfg(
-                           data_file='data.yml',
-                           cloudinit_template='cloudinit.cfg.j2',
-                           cloudinit_output='cloudinit.cfg'):
+def generate_cfg(
+                data_file='data.yml',
+                cloudinit_template='cloudinit.cfg.j2',
+                cloudinit_output='cloudinit.cfg',
+                network_template='network.cfg.j2',
+                network_output='network.cfg'):
     data = load_data(data_file)
     user_data = data.get('user_data', [])
     item_values = get_item_keys_and_values(data)
@@ -63,31 +68,13 @@ def generate_cloudinit_cfg(
     context = {'user_data': user_data}
     
     cloudinit_cfg = render_template(cloudinit_template, context)
+    network_cfg   = render_template(network_template)
 
-    with open(cloudinit_output, 'w') as cloudinit_file:
+    with open(cloudinit_output, 'w') as cloudinit_file, open(network_output, 'w') as network_file:
         cloudinit_file.write(cloudinit_cfg)
-        
-
-def generate_network_cfg(
-                        data_file='data.yml',
-                        network_template='network.cfg.j2',
-                        network_output='network.cfg'
-                        ):
-    data = load_data(data_file)
-    network_data = [item.get('network', {}) for item in data.get('spec', [])]
-
-    # Prepare context for the template
-    context = {'network_data': network_data}
-
-    # Render the network configuration file using the template
-    network_cfg = render_template(network_template, context)
-
-    # Write the rendered configuration to the output file
-    with open(network_output, 'w') as network_file:
         network_file.write(network_cfg)
 
-
-
+        
 if __name__ == '__main__':
     # generate_variable_file()
-    generate_network_cfg()
+    generate_cfg()
