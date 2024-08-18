@@ -5,14 +5,22 @@ resource "libvirt_cloudinit_disk" "vms" {
     user_data     = data.template_file.user_data[each.key].rendered
     network_config = data.template_file.network_config[each.key].rendered
 }
+
 data "template_file" "network_config" {
-    for_each = { for item in var.network : item.vm_name => item}
+    for_each = { for idx, vm in var.vm_name : vm => {
+        vm_name     = toset(var.vm_name),
+        hostname    = var.hostname[idx],
+        ip_address  = var.network[idx].ip_address,
+        gateway     = var.network[idx].gateway,
+        nameservers = var.network[idx].nameservers
+    }}
+    
     template = file("${path.module}/network.cfg")
 
     vars = {
-        ip_address = each.value.network[0].ip_address
-        gateway    = each.value.network[0].gateway
-        nameserver = each.value.network[0].nameserver
+        ip_address  = each.value.ip_address
+        gateway     = each.value.gateway
+        nameservers = join(", ", each.value.nameservers)
     }
 }
 
@@ -27,9 +35,9 @@ data "template_file" "user_data" {
 }
 
 resource "libvirt_volume" "k8s-vm-vda" {
-    for_each = local.vms
+    for_each         = toset(var.vm_name)
 
-    name             = "${each.value.hostname}.qcow2"
+    name             = "${each.value}.qcow2"
     pool             = "vms"
     base_volume_name = "template-ubuntu2004.img"
     base_volume_pool = "isos"
@@ -38,11 +46,11 @@ resource "libvirt_volume" "k8s-vm-vda" {
 }
 
 resource "libvirt_domain" "vms" {
-    for_each = local.vms
+    for_each    = toset(var.vm_name)
 
-    name   = each.value.hostname
-    memory = contains(["k8s-master01", "k8s-master02"], each.value.hostname) ? 6192 : 4096
-    vcpu   = contains(["k8s-master01", "k8s-master02"], each.value.hostname) ? 3 : 2
+    name        = each.value
+    memory      = contains(["k8s-master01", "k8s-master02"], each.value) ? 6192 : 4096
+    vcpu        = contains(["k8s-master01", "k8s-master02"], each.value) ? 3 : 2
 
     cpu {
            mode = "host-passthrough"
@@ -81,3 +89,4 @@ resource "libvirt_domain" "vms" {
         autoport    = true
     }
 }
+

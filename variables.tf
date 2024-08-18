@@ -9,8 +9,8 @@ variable "hostname" {
 variable "network" {
   description = "Description for network"
   type = list(object({
-      ip_address = string
-      gateway    = string
-      nameserver = list(string)
+      ip_address  = string
+      gateway     = string
+      nameservers = list(string)
   }))
 }

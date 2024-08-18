@@ -1,25 +1,19 @@
 {% set vm_name = [] -%}
 {% set hostname = [] -%}
-{% set ip_addresses = [] -%}
-{% set gateways = [] -%}
-{% set nameservers = [] -%}
+{% set network_list = [] -%}
+
 {% for item in item_values -%}
     {% if item.vm_name is defined and item.hostname is defined and item.network is defined -%}
         {% set _ = vm_name.append(item.vm_name) -%}
         {% set _ = hostname.append(item.hostname) -%}
 
-        {% for network in item.network -%}
-            {% set _ = ip_addresses.append(network.ip_address) -%}
-            {% set _ = gateways.append(network.gateway) -%}
-            {% set _ = nameservers.append(network.nameserver) -%}
+        {% for net in item.network -%}
+            {% set net_dict = '{ "ip_address": "' ~ net.ip_address ~ '", "gateway": "' ~ net.gateway ~ '", "nameservers": ' ~ net.nameservers | tojson | replace(' ', '') ~ ' }' -%}
+            {% set _ = network_list.append(net_dict) -%}
         {% endfor -%}
     {% endif -%}
 {% endfor -%}
 
-vm_name = {{ vm_name | tojson | trim }}
-hostname = {{ hostname | tojson | trim }}
-network = [{
-    ip_addresses = {{ ip_addresses | tojson }},
-    gateways = {{ gateways | tojson }},
-    nameservers = {{ nameservers | tojson }}
-}]
+vm_name = {{ vm_name | tojson | replace(' ', '') | trim }}
+hostname = {{ hostname | tojson | replace(' ', '') | trim }}
+network  = [{{ network_list | join(',') | trim }}]
