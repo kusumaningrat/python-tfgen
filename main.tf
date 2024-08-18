@@ -22,7 +22,7 @@ data "template_file" "network_config" {
     vars = {
         ip_address  = each.value.ip_address
         gateway     = each.value.gateway
-        nameservers = join(", ", each.value.nameservers)
+        nameservers = join("\n    - ", each.value.nameservers)
     }
 }
 
