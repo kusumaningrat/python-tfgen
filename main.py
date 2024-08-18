@@ -76,5 +76,5 @@ def generate_cfg(
 
         
 if __name__ == '__main__':
-    # generate_variable_file()
+    generate_variable_file()
     generate_cfg()

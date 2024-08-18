@@ -1,6 +1,17 @@
 {% for key in item_keys -%}
+{% if key == "network" -%}
+variable "{{ key }}" {
+  description = "Description for {{ key }}"
+  type = list(object({
+      ip_address = string
+      gateway    = string
+      nameserver = list(string)
+  }))
+}
+{% else -%}
 variable "{{ key }}" {
   description = "Description for {{ key }}"
   type        = list(string)
 }
+{% endif -%}
 {% endfor %}
