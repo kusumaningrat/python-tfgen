@@ -27,11 +27,11 @@ data "template_file" "network_config" {
 }
 
 data "template_file" "user_data" {
-    for_each = { for item in var.network : item.vm_name => item}
+    for_each = toset(var.{{ key }})
     template = file("${path.module}/cloudinit.cfg")
 
     vars = {
-	    hostname = each.value.hostname
+	    hostname = each.value
     }
 
 }
