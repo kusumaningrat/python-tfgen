@@ -8,7 +8,7 @@
         {% set _ = hostname.append(item.hostname) -%}
 
         {% for net in item.network -%}
-            {% set net_dict = '{ "ip_address": "' ~ net.ip_address ~ '", "gateway": "' ~ net.gateway ~ '", "nameservers": ' ~ net.nameservers | tojson | replace(' ', '') ~ ' }' -%}
+            {% set net_dict = '{ "ip_address": "' ~ net.ip_address ~ '", "netmask": "' ~ net.netmask ~ '", "gateway": "' ~ net.gateway ~ '", "nameservers": ' ~ net.nameservers | tojson | replace(' ', '') ~ ' }' -%}
             {% set _ = network_list.append(net_dict) -%}
         {% endfor -%}
     {% endif -%}

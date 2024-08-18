@@ -2,6 +2,7 @@ locals {
   vm_data = { for idx, vm in var.vm_name : vm => {
     hostname    = var.hostname[idx],
     ip_address  = var.network[idx].ip_address,
+    netmask     = var.network[idx].netmask,
     gateway     = var.network[idx].gateway,
     nameservers = var.network[idx].nameservers
   }}
