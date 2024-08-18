@@ -6,7 +6,6 @@ locals {
     nameservers = var.network[idx].nameservers
   }}
 }
-
 {% for key in item_keys -%}
 {% if key == 'vm_name' -%}
 resource "libvirt_cloudinit_disk" "vms" {
@@ -18,7 +17,7 @@ resource "libvirt_cloudinit_disk" "vms" {
 }
 
 data "template_file" "network_config" {
-    for_each = locals.vm_data
+    for_each = local.vm_data
     template = file("${path.module}/network.cfg")
 
     vars = {
@@ -50,7 +49,7 @@ resource "libvirt_volume" "k8s-vm-vda" {
 }
 
 resource "libvirt_domain" "vms" {
-    for_each    = locals.vm_data
+    for_each    = local.vm_data
 
     name        = each.value.hostname
     memory      = contains(["k8s-master01", "k8s-master02"], each.value) ? 6192 : 4096

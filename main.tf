@@ -1,3 +1,11 @@
+locals {
+  vm_data = { for idx, vm in var.vm_name : vm => {
+    hostname    = var.hostname[idx],
+    ip_address  = var.network[idx].ip_address,
+    gateway     = var.network[idx].gateway,
+    nameservers = var.network[idx].nameservers
+  }}
+}
 resource "libvirt_cloudinit_disk" "vms" {
     for_each      = toset(var.vm_name)
     name          = "${each.value}.iso"
@@ -7,14 +15,7 @@ resource "libvirt_cloudinit_disk" "vms" {
 }
 
 data "template_file" "network_config" {
-    for_each = { for idx, vm in var.vm_name : vm => {
-        vm_name     = toset(var.vm_name),
-        hostname    = var.hostname[idx],
-        ip_address  = var.network[idx].ip_address,
-        gateway     = var.network[idx].gateway,
-        nameservers = var.network[idx].nameservers
-    }}
-    
+    for_each = local.vm_data
     template = file("${path.module}/network.cfg")
 
     vars = {
@@ -46,9 +47,9 @@ resource "libvirt_volume" "k8s-vm-vda" {
 }
 
 resource "libvirt_domain" "vms" {
-    for_each    = toset(var.vm_name)
+    for_each    = local.vm_data
 
-    name        = each.value
+    name        = each.value.hostname
     memory      = contains(["k8s-master01", "k8s-master02"], each.value) ? 6192 : 4096
     vcpu        = contains(["k8s-master01", "k8s-master02"], each.value) ? 3 : 2
 
