@@ -9,7 +9,7 @@ You need to clone the repository into your computer.
 ```bash
 git clone https://<git_url/python-tfgen
 ```
-You need to prepare a file named `data.yaml` that define your servers spec. The file is look like this for example.
+You need to prepare a file named `data.yaml` that define your servers spec. The file is look like this for example (just make custom base on your need).
 ```
 user_data:
   - user: ubuntu
@@ -48,7 +48,7 @@ spec:
 
 ```
 
-You need to create the `provider.tf` file manually by using below contents (just make custome base on your need).
+You need to create the `provider.tf` file manually by using below contents (just make custom base on your need).
 
 ```
 provider "libvirt" {
