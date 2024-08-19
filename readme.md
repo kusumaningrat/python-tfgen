@@ -47,6 +47,24 @@ spec:
           - 8.8.4.4
 
 ```
+
+You need to create the `provider.tf` file manually by using below contents (just make custome base on your need).
+
+```
+provider "libvirt" {
+    uri = "qemu:///system"
+}
+
+terraform {
+  required_providers {
+    libvirt = {
+      source = "dmacvicar/libvirt"
+      version = "0.7.4"
+    }
+  }
+}
+```
+
 Then, you can just run the `main.py` file to generate the config. 
 
 ```
