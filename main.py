@@ -1,8 +1,9 @@
-import yaml
+import yaml, glob, argparse
 from jinja2 import Template, Environment, FileSystemLoader
 
 def load_data(file_path):
     """Load YAML data from a file."""
+    yaml_files = glob.glob("*.yaml") + glob.glob("*.yml")
     with open(file_path, 'r') as file:
         return yaml.safe_load(file)
 
@@ -29,7 +30,7 @@ def render_template(template_name, context=None, template_dir='templates'):
     template = env.get_template(template_name)
     return template.render(context)
 
-def generate_variable_file(data_file='data.yml', 
+def generate_variable_file(data_file, 
                            variables_template='variable.tf.j2',
                            tfvars_template='terraform.tfvars.j2',
                            variables_output='variables.tf',
@@ -56,7 +57,7 @@ def generate_variable_file(data_file='data.yml',
         main_output_file.write(main_tf)
 
 def generate_cfg(
-                data_file='data.yml',
+                data_file,
                 cloudinit_template='cloudinit.cfg.j2',
                 cloudinit_output='cloudinit.cfg',
                 network_template='network.cfg.j2',
@@ -74,7 +75,34 @@ def generate_cfg(
         cloudinit_file.write(cloudinit_cfg)
         network_file.write(network_cfg)
 
+def main():
+    parser = argparse.ArgumentParser(
+        prog="Python TFgen",
+        description="Terraform generator template"
+    )
+    subparsers = parser.add_subparsers(
+        title="commands",
+        help="Commands for Terraform config generator"
+
+    )
+
+    # Parser for generate command
+    generate_cfg_parser = subparsers.add_parser(
+        'generate', help="Generate Terraform and configuration files"
+    )
+    generate_cfg_parser.add_argument(
+        'data_file',
+        type=str,
+        help="Path to the YAML config file"
+    )
+    generate_cfg_parser.set_defaults(
+        func=lambda args: (generate_variable_file(args.data_file), generate_cfg(args.data_file))
+    )
+
+    args = parser.parse_args()
+    args.func(args)
+    
+
         
 if __name__ == '__main__':
-    generate_variable_file()
-    generate_cfg()
+    main()
